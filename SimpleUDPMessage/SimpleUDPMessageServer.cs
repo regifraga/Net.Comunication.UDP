@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Text;
 using System.Net.Sockets;
@@ -9,6 +9,9 @@ namespace RegiFraga.Comunication.UDP
     {
         public delegate void MessageReceiveHandle(string senderAddress, string senderPort, string message);
         public event MessageReceiveHandle OnMessageReceive;
+
+        public delegate void ResponseMessageHandle(string receivedMessage, out string responseToSend);
+        public event ResponseMessageHandle OnResponseMessage;
 
         public SimpleUDPMessageServer(int port = 9669)
         {
@@ -21,12 +24,24 @@ namespace RegiFraga.Comunication.UDP
             base.Udp = new UdpClient(Port);
         }
 
+        private string GetResponse(string receivedMessage)
+        {
+            var response = "";
+            OnResponseMessage?.Invoke(receivedMessage, out response);
+
+            return response;
+        }
+
         private void SimpleUDPMessageServer_OnMessageReceive(IPEndPoint sender, string message)
         {
             OnMessageReceive?.Invoke(sender.Address.ToString(), sender.Port.ToString(), message);
 
-            var response = Encoding.ASCII.GetBytes(DateTime.Now.ToString());
-            base.Udp.Send(response, response.Length, sender);
+            var messageToResponse = GetResponse(message);
+            if (!string.IsNullOrEmpty(messageToResponse))
+            {
+                var response = Encoding.ASCII.GetBytes(messageToResponse);
+                base.Udp.Send(response, response.Length, sender);
+            }
         }
     }
 }
