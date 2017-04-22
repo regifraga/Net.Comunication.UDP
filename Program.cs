@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace RegiFraga.Comunication.UDP.Tests
 {
@@ -14,6 +14,7 @@ namespace RegiFraga.Comunication.UDP.Tests
                 using (var server = new SimpleUDPMessageServer())
                 {
                     server.OnMessageReceive += Server_OnMessageReceive;
+                    server.OnResponseMessage += Server_OnResponseMessage;
                     server.Start();
 
                     Console.WriteLine("SERVER started at port: {0}", server.Port);
@@ -67,6 +68,29 @@ namespace RegiFraga.Comunication.UDP.Tests
         private static void Server_OnMessageReceive(string senderAddress, string senderPort, string message)
         {
             Console.WriteLine("[{0}:{1}] >> {2}", senderAddress, senderPort, message);
+        }
+
+        private static void Server_OnResponseMessage(string receivedMessage, out string responseToSend)
+        {
+            switch (receivedMessage.ToUpper())
+            {
+                case "DATE":
+                    responseToSend = DateTime.Now.ToString();
+                    break;
+                case "TEST":
+                    responseToSend = "Ok, it's just a test!";
+                    break;
+                case "LIST":
+                    var files = System.IO.Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory);
+                    responseToSend = string.Join(Environment.NewLine, files);
+                    break;
+                case "END":
+                    responseToSend = "Tchau... :)";
+                    break;
+                default:
+                    responseToSend = "";
+                    break;
+            };
         }
     }
 }
