@@ -1,12 +1,12 @@
 using System;
 
-namespace RegiFraga.Comunication.UDP.Tests
+namespace UDP.Simple.Message.Tests
 {
-    class Program
+    class Example
     {
         static void Main(string[] args)
         {
-            Console.Write("Press S to start SERVER or C to CLIENT: ");
+            Console.Write("Press S to start SERVER, C to CLIENT CC to CLIENT with CALLBACK opction: ");
             var progType = Console.ReadLine();
 
             if (progType.ToUpper() == "S")
@@ -26,7 +26,7 @@ namespace RegiFraga.Comunication.UDP.Tests
                     Console.WriteLine("Server - End!");
                 }
             }
-            else
+            else if (progType.ToUpper() == "C")
             {
                 using (var client = new SimpleUDPMessageClient())
                 {
@@ -37,11 +37,25 @@ namespace RegiFraga.Comunication.UDP.Tests
                     WaitUserMessage((msg) => {
                         client.Send(msg);
                     });
-
-                    Console.WriteLine("Client - End1!");
                 }
 
-                Console.WriteLine("Client - End2!");
+                Console.WriteLine("Client - End!");
+            }
+            else
+            {
+                using (var client = new SimpleUDPMessageClient())
+                {
+                    client.Start();
+                    Console.WriteLine("CLIENT(with callbak) started at: {0}:{1}", client.Address, client.Port);
+
+                    WaitUserMessage((msg) => {
+                        client.Send(msg, (response) => {
+                            Console.WriteLine("[callbak]> {0}", response);
+                        });
+                    });
+                }
+
+                Console.WriteLine("Client(with callbak) - End!");
             }
         }
 
