@@ -1,6 +1,6 @@
 using System;
 
-namespace UDP.Simple.Message.Tests
+namespace RegiFraga.Comunication.UDP.Tests
 {
     class Example
     {
