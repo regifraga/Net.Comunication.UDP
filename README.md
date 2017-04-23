@@ -49,6 +49,50 @@ namespace Tests
 }
 ```
 
+## How to use client component with callback option
+
+```CSharp
+using System;
+
+namespace Tests
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            using (var client = new SimpleUDPMessageClient())
+            {
+                client.Start();
+                Console.WriteLine("CLIENT(with callback) started at: {0}:{1}", client.Address, client.Port);
+
+                WaitUserMessage((msg) => {
+                    client.Send(msg, (response) => {
+                        Console.WriteLine("[with callback]> {0}", response);
+                    });
+                });
+
+                Console.WriteLine("Client(with callback) - End!");
+            }
+        }
+
+        private static void WaitUserMessage(Action<string> command)
+        {
+            while (true)
+            {
+                var message = Console.ReadLine();
+                if (message.ToUpper() == "")
+                {
+                    break;
+                }
+
+                command?.Invoke(message);
+                System.Threading.Thread.Sleep(250);
+            }
+        }
+    }
+}
+```
+
 ## How to use server component
 
 ```CSharp
