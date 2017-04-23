@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IMS.UDP.Simple.Message
+namespace RegiFraga.Comunication.UDP
 {
     public abstract class SimpleUDPMessageBase : ISimpleUDPMessage
     {
