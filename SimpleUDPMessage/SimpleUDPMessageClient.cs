@@ -1,11 +1,13 @@
-﻿using System.Net;
+using System;
+using System.Net;
 using System.Text;
 using System.Net.Sockets;
 
-namespace RegiFraga.Comunication.UDP
+namespace IMS.UDP.Simple.Message
 {
     public class SimpleUDPMessageClient : SimpleUDPMessageBase
     {
+        private Action<string> _sendCallback;
         public delegate void MessageReceiveHandle(string message);
         public event MessageReceiveHandle OnMessageReceive;
 
@@ -30,9 +32,17 @@ namespace RegiFraga.Comunication.UDP
             base.Udp.Send(data, data.Length);
         }
 
+        public void Send(string message, Action<string> callback)
+        {
+            _sendCallback = callback;
+            byte[] data = Encoding.ASCII.GetBytes(message);
+            base.Udp.Send(data, data.Length);
+        }
+
         private void SimpleUDPMessageClient_OnReceive(IPEndPoint sender, string message)
         {
             OnMessageReceive?.Invoke(message);
+            _sendCallback?.Invoke(message);
         }
     }
 }
