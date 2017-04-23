@@ -3,7 +3,7 @@ using System.Net;
 using System.Text;
 using System.Net.Sockets;
 
-namespace IMS.UDP.Simple.Message
+namespace RegiFraga.Comunication.UDP
 {
     public class SimpleUDPMessageClient : SimpleUDPMessageBase
     {
